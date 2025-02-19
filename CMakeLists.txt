@@ -100,5 +100,5 @@ add_subdirectory(src)
 add_subdirectory(tests)
 # add_subdirectory(examples)
 
-add_executable(main user_entry.cpp)
-target_link_libraries(main PUBLIC -lcublas -lcudart -lcudadevrt llmengine)
+# add_executable(main user_entry.cpp)
+# target_link_libraries(main PUBLIC -lcublas -lcudart -lcudadevrt llmengine)

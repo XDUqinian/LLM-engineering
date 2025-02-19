@@ -11,7 +11,7 @@ __global__ void embeddingFunctor(const int* input_ids,
     int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < max_context_token_num * hidden_size) {
         int id = input_ids[index / hidden_size];
-        output[index] = embed_table[id * hidden_size + index % hidden_size];
+        output[index]=embed_table[id * hidden_size + index % hidden_size];
         index += blockDim.x * gridDim.x;
     }
 }
@@ -26,11 +26,7 @@ void launchInputEmbedding(TensorWrapper<int>* input_ids,    // INT [token num]
     const int hidden_size = output->shape[1];
     const int gridSize = 2048;
     LLM_CHECK_WITH_INFO(max_context_token_num == input_ids->shape[0], "input ids 1st shape should equal to 1st shape of output");
-    embeddingFunctor<T><<<gridSize, blockSize>>>(input_ids->data,
-                                                 output->data,
-                                                 embed_table->data,
-                                                 max_context_token_num,
-                                                 hidden_size);
+    embeddingFunctor<T><<<gridSize, blockSize>>>(input_ids->data, output->data, embed_table->data, max_context_token_num, hidden_size);
 #ifdef PRINT_DATA
     print_data<<<1, 1>>>(output->data);
 #else
