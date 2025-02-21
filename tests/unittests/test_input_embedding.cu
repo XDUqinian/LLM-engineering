@@ -11,10 +11,6 @@
 #include <cuda_runtime.h>
 
 #include "src/kernels/input_embedding.h"
-// (RussWong)note:
-// there is no embedding cpu kernel implementation now
-// `./embedding` to test fp16 GPU kernel
-// `./embedding 1` to test fp32 GPU kernel
 
 #define CHECK(call)                                   \
 do                                                    \
