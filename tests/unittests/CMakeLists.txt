@@ -17,10 +17,19 @@ target_link_libraries(
     cal_paddingoffset)
 
 add_executable(rms_norm
-test_rmsnorm.cu
+    test_rmsnorm.cu
 )
 target_link_libraries(
     rms_norm PUBLIC
     -lcudart
     -lcudadevrt
     rmsnorm)
+
+add_executable(causalmask
+    test_casual_mask.cu
+)
+target_link_libraries(  # Libs for test_build_casual_mask
+   causalmask PUBLIC
+    -lcudart
+    -lcudadevrt
+    build_casual_mask) 
