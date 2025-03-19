@@ -6,7 +6,6 @@
 #include <vector>      // std::vector
 
 #include "src/kernels/build_casual_mask.h"
-// (RussWong)note: this kernel's CPU implementation is absolutely right.
 // when you are implementing LLMs inference on CPU, you can reuse the CPU kernel
 // we compare the kernel correctnesss by eyes and result print infos
 void CPUbuildCasualMask(float* mask, 

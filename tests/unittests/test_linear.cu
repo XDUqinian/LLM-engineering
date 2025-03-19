@@ -19,12 +19,13 @@ void CPUlinear(float* input, float* weight, float* output,
             }
         }
     }
+    std::cout<<output[0]<<std::endl;
 }
 
 bool CheckResult(float* CPUoutput, float* GPUoutput, int output_size) {
     for(int i = 0; i < output_size; i++) {
     if (i < 5) {
-        printf("0th res, CPUoutput = %f, GPUoutput = %f\n", CPUoutput[i], GPUoutput[i]);
+        printf("%dth res, CPUoutput = %f, GPUoutput = %f\n", i, CPUoutput[i], GPUoutput[i]);
     }
     if(fabs(CPUoutput[i] - GPUoutput[i]) > 1e-6){
             printf("the %dth res is wrong, CPUoutput = %f, GPUoutput = %f\n", i, CPUoutput[i], GPUoutput[i]);
@@ -91,6 +92,9 @@ int main(int argc, char *argv[]) {
     // Note: remember to memcpy from device to host and define the correct copy size(mul the sizeof(dtype)), or will cause segment fault
     CHECK(cudaMemcpy(h_out, d_out, sizeof(float) * output_size, cudaMemcpyDeviceToHost));
     float* CPUout = (float*) malloc(sizeof(float) * output_size);
+    // debug info :  cpu的输出不初始化为0是有可能出现未定义错误的
+    memset(CPUout, 0, sizeof(float) * output_size);
+
     CPUlinear(h_in, h_w, CPUout, seqlen, hidden_units, hidden_units);
 
     bool is_right = CheckResult(CPUout, h_out, output_size);
