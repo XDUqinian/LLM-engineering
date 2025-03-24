@@ -122,6 +122,30 @@ public:
         }
         return std::accumulate(shape.begin(), shape.end(), (int)1, std::multiplies<int>());
     }
+    
+    inline T getVal(int id) const {
+        //TODO: need some boundry and device check
+        LLM_CHECK(location == CPU);
+        return data[id];
+    } // only available on CPU by []
+
+    inline T getVal() const
+    {
+        // TODO: add type check, this is very important, because we often naturally access GPU data, which is wrong
+        // for example, I am in transpose kernel to use layer_id->getVal<int>(), which is wrong
+        LLM_CHECK(location == CPU);
+        return getVal(0);
+    }
+
+    inline T* getPtr() const {
+        //TODO: need some boundry check
+        return (T*)data;
+    }
+
+    inline T* getPtrByOffset(int offset) const {
+        //TODO: need some boundry check
+        return (T*)data + offset;
+    }
 
     virtual std::string toString() const
     {
