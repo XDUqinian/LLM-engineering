@@ -78,8 +78,8 @@ int main()
     TensorWrapper<int> *layer_id = new TensorWrapper<int>(Device::CPU, type_int, {batch_size}, h_layer_id);
     TensorWrapper<int> *cur_q_len = new TensorWrapper<int>(Device::GPU, type_int, {batch_size}, dcur_query_length);
     TensorWrapper<int> *history_len = new TensorWrapper<int>(Device::GPU, type_int, {batch_size}, dhistory_length);
-    TensorWrapper<float> *out_kdst = new TensorWrapper<float>(Device::GPU, type, {batch_size, kv_head_num, max_seq_len, head_size}, d_k_dst);
-    TensorWrapper<float> *out_vdst = new TensorWrapper<float>(Device::GPU, type, {batch_size, kv_head_num, max_seq_len, head_size}, d_v_dst);
+    TensorWrapper<float> *out_kdst = new TensorWrapper<float>(Device::GPU, type, {1,batch_size, kv_head_num, max_seq_len, head_size}, d_k_dst);
+    TensorWrapper<float> *out_vdst = new TensorWrapper<float>(Device::GPU, type, {1,batch_size, kv_head_num, max_seq_len, head_size}, d_v_dst);
     // debug info, better to retain: std::cout << "before launch kernel" << std::endl;
     launchConcatKVCache(in_ksrc, in_vsrc, layer_id, cur_q_len, history_len, out_kdst, out_vdst);
     // debug info, better to retain: std::cout << "after launch kernel" << std::endl;
@@ -88,8 +88,9 @@ int main()
     cudaMemcpy(h_k_dst, d_k_dst, sizeof(float) * kvcache_size, cudaMemcpyDeviceToHost);
     // debug info, better to retain: std::cout << "cuda memcpy device to host" << std::endl;
     // note: need to add offset2index and index2offset API to help us program and check result
-    for (int i = batch_size * (1) * kv_head_num * head_size; i < batch_size * max_seq_len * kv_head_num * head_size; i++)
+    for (int i = 256 + 1 * head_size; i < 256 + 17 * head_size + 1; i++)
     {
+        // if (i != 256 + 1 * head_size) continue;
         printf("index = %d\n", i);
         printf("res k = %f\n", h_k_dst[i]);
         // debug info, better to retain: printf("topK id = %d\n", id);
@@ -97,6 +98,10 @@ int main()
         printf("===============\n");
         // debug info, better to retain: printf("topK val =%f\n", val);
     }
+    // for (int i = 0; i < kv_size; i++)
+    // {
+    //     std::cout<<h_k_src[i]<<"\n";
+    // }
     // debug info, better to retain: std::cout << "before free" << std::endl;
     free(h_k_src);
     free(h_v_src);
