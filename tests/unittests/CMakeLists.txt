@@ -59,4 +59,13 @@ target_link_libraries(
     test_concat_kv PUBLIC
     -lcudart
     -lcudadevrt
-    concat_kv) 
+    concat_kv)
+
+add_executable(test_repeat_kv
+    test_repeat_kv.cu
+)
+target_link_libraries( 
+    test_repeat_kv PUBLIC
+    -lcudart
+    -lcudadevrt
+    repeat_kv)
