@@ -77,4 +77,13 @@ target_link_libraries(
     test_mask_softmax PUBLIC
     -lcudart
     -lcudadevrt
-    mask_softmax) 
+    mask_softmax)
+
+add_executable(test_fused_trans_remv_pad
+    test_fused_trans_remv_pad.cu
+)
+target_link_libraries(  
+    test_fused_trans_remv_pad PUBLIC
+    -lcudart
+    -lcudadevrt
+    fused_transpose_and_remv_pad) 
