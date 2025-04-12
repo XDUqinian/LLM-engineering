@@ -164,3 +164,143 @@ public:
                     data);
     }    
 };
+
+struct TensorMap {
+    std::unordered_map<std::string, Tensor*> tensor_map_;
+
+    TensorMap() = default;
+    TensorMap(std::initializer_list<std::pair<std::string, Tensor*>> tensor_map){
+        for (auto& pair : tensor_map) {
+            if (isValid(pair.second)) {
+                insert(pair.first, pair.second);
+            }
+            else {
+                // std::cout << "this is not a valid tensor, skip to insert into tensormap" << std::endl;
+                LLM_CHECK_WITH_INFO(isValid(pair.second),fmtstr("%s is not a valid tensor, skipping insert into TensorMap", pair.first.c_str()));
+            }
+        }
+    }
+
+    TensorMap(const std::unordered_map<std::string, Tensor*>& tensor_map) {
+        // C++ 11 traverse
+        // for (auto& kv : tensor_map) {
+        // C++ 98 traverse
+        for(auto it = tensor_map_.begin(); it != tensor_map_.end(); it++) {
+            // if (isValid(kv.second)) {
+            //     insert(kv.first, kv.second);
+            // }
+            if (isValid(it->second)) {
+                insert(it->first, it->second);
+            }
+            else {
+                // TODO: add a reminder info
+            }
+        }        
+    };
+
+    ~TensorMap(){
+        tensor_map_.clear();
+    }
+
+    inline size_t size() const
+    {
+        return tensor_map_.size();
+    }
+
+    inline bool isExist(const std::string& key) const
+    {
+        return tensor_map_.find(key) != tensor_map_.end();
+    }
+
+    inline bool isValid(const Tensor* tensor)
+    {
+        return tensor->size() > 0;
+    }
+    // 增
+    inline void insert(const std::string& key, Tensor* value)
+    {
+        // TODO: add a check to check key is unique and value is valid
+        // tensor_map_.insert({key, value});
+        tensor_map_[key] = value;
+    }
+
+    inline void insert(std::pair<std::string, Tensor*> p)
+    {
+        tensor_map_.insert(p);
+    }
+    //删
+
+    //改
+
+    //查
+    inline Tensor* at(const std::string& key)
+    {
+         // TODO: add a check to check key is existed
+        LLM_CHECK_WITH_INFO(isExist(key), fmtstr("Cannot find a tensor of name %s in the tensor map (keys: %s)",
+                                  key.c_str(),
+                                  vec2str(keys()).c_str()));
+        return tensor_map_.at(key);
+        
+    }
+
+    inline Tensor* operator[](const std::string& key)
+    {
+        LLM_CHECK_WITH_INFO(isExist(key), fmtstr("Cannot find a tensor of name %s in the tensor map    (keys: %s)",
+                                  key.c_str(),
+                                  vec2str(keys()).c_str()));
+        return tensor_map_.at(key);
+
+    }
+    // TODO: Now cant use get* function in TensorMap struct, cause the value is Tensor*, not TensorWrapper,need to enhance
+    // template<typename T>
+    // inline T getVal(const std::string& key) const
+    // {
+    //     // TODO: add a check to check key is existed
+    //     return tensor_map_.at(key).getVal<T>();
+    // }
+    // template<typename T>
+    // inline T getValByOffset(const std::string& key, int index) const
+    // {
+    //     // TODO: add a check to check key is existed
+    //     return tensor_map_.at(key).getVal<T>(index);
+    // }
+    // //default get ptr with offset 0
+    // template<typename T>
+    // inline T* getPtr(const std::string& key) const
+    // {
+    //     // TODO: add a check to check key is existed
+    //     return tensor_map_.at(key).getPtr<T>();
+    // }
+    // //get ptr with specified offset
+    // template<typename T>
+    // inline T* getPtrWithOffset(const std::string& key, int index) const
+    // {
+    //     // TODO: add a check to check key is existed
+    //     return tensor_map_.at(key).getPtrByOffset<T>(index);
+    // }
+
+    //for debug
+    std::vector<std::string> keys() const
+    {
+        std::vector<std::string> key_names;
+        for (auto& kv : tensor_map_) {
+            key_names.push_back(kv.first);
+        }
+        return key_names;
+    }
+    // 打印出tensormap中的所有key
+    std::string toString()
+    {
+        std::stringstream ss;
+        ss << "{";
+        std::vector<std::string> key_names = keys();
+        for (size_t i = 0; i < tensor_map_.size(); ++i) {
+            ss << key_names[i] << ": " << at(key_names[i])->toString();
+            if (i < tensor_map_.size() - 1) {
+                ss << ", ";
+            }
+        }
+        ss << "}";
+        return ss.str();
+    }
+};

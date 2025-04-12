@@ -1,5 +1,5 @@
 #pragma once
-#include <unorderd_map>
+#include <unordered_map>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -12,8 +12,8 @@ struct CudaBigBlock {
     size_t size;
     bool is_allocated;
 
-    cudaBigBlock() = default;
-    cudaBigBlock(void* data_, int size_, bool is_allocated_):
+    CudaBigBlock() = default;
+    CudaBigBlock(void* data_, int size_, bool is_allocated_):
         data(data_),
         size(size_),
         is_allocated(is_allocated_){}
